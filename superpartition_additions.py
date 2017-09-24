@@ -124,8 +124,8 @@ def shift_circle_cells(self,nsp):
         if i == len(nsp)-1:     ##special case where the circle is at the last row
             if sp[i]!=nsp[i]:   ##check if there’s a cell added to rows that have circle
                 j=rows_with_circle[k]
-                circle_location.append([j+1,0])  
-                # if cells are added to the last row and the last row happen to have a 
+                circle_location.append([j+1,0])
+                # if cells are added to the last row and the last row happen to have a
                 # circle, we have to append a new row to our diagram and put the circle there
             else:
                 j=rows_with_circle[k]      
