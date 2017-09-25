@@ -1,6 +1,6 @@
 load("http://garsia.math.yorku.ca/~zabrocki/superpartitions.py")
 def add_horizonal_border_strip(self, h):
-    '''
+    r"""
     this function returns locations of the circles after they are shifted by ``h``
     input:
         self : a circled diagram e.g. [[4,1,0],[2]] ;
@@ -20,7 +20,7 @@ def add_horizonal_border_strip(self, h):
                                         [3, 1, 0; 6],
                                         [3, 1, 0; 5, 1],
                                         [2, 1, 0; 6, 1]]
-    '''
+    """
     self = SuperPartition(self).to_circled_diagram()
     sp=self[0][:]
     sp.append(0)
