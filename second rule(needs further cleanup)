@@ -52,7 +52,7 @@ def add_horizonal_border_strip(self, h):
     test.append(self[0])
     test.append(x)
     test = tuple(test)
-    return test
+    return [SuperPartition.from_circled_diagram(*cd) for cd in test[1]]
 def convert_form(legal_circle_location):
     
 
