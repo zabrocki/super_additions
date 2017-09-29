@@ -1,0 +1,52 @@
+load("http://garsia.math.yorku.ca/~zabrocki/superpartitions.py")
+def add_horizonal_border_strip(self, h):
+    self = SuperPartition(self).to_circled_diagram()
+    sp=self[0][:]
+    sp.append(0)
+    rows_with_circle=[a[0] for a in self[1] ]
+    nsp=[list(la)+[0] for la in Partition(sp).add_horizontal_border_strip(h)] 
+    circle_location=[[]for i in range (len(nsp))]
+    for x in range(len(nsp)):
+        circle_location[x]=shift_circle_cells(self,nsp[x])
+    s1 = [la[1] for la in circle_location]
+    s2 = [la[0] for la in circle_location]
+    for i in range(len(s1)):        
+        k = [a[0] for a in s1[i]]
+        j = [a[1] for a in s1[i]]
+        for k1 in range(len(k)):
+            circle_location[i][0][k[k1]]+=1
+        if len(set(k))!= len(s1[i]) or len(set(j))!= len(s1[i]):
+            circle_location.remove([s2[i],s1[i]])
+    x=[[] for i in range(len(circle_location))]
+    for i in range(len(circle_location)):
+        x[i]= SuperPartition(SuperPartition.from_circled_diagram(circle_location[i][0],circle_location[i][1])).to_circled_diagram()
+    return [SuperPartition.from_circled_diagram(*cd) for cd in x]
+
+
+
+def shift_circle_cells(self,nsp):
+    sp=self[0][:]
+    sp.append(0)
+    circle_location=[]
+    rows_with_circle=[a[0] for a in self[1] ]
+    index=0
+    k=0
+    circle_location = [nsp,[]]
+    for i in rows_with_circle:
+        if i < len(nsp)-1:
+            if sp[i]!=nsp[i]:             
+                j=rows_with_circle[k] 
+                circle_location[1].append([j+1,nsp[i+1]]) 
+            else:
+                circle_location[1].append(list(self[1][index])) 
+            index+=1
+        if i == len(nsp)-1: 
+            if sp[i]!=nsp[i]:   
+                j=rows_with_circle[k]
+                circle_location[1].append([j+1,0])
+            else:
+                j=rows_with_circle[k]      
+                circle_location[1].append(list(self[1][index]))
+            index+=1
+        k+=1
+    return circle_location
