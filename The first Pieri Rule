@@ -12,7 +12,8 @@ def add_horizonal_border_strip(self, h):
     - a list of super partitions
     
     EXAMPLES::
-    sage: add_horizonal_border_strip([[4,1],[3]], 3)
+
+        sage: add_horizonal_border_strip([[4,1],[3]], 3)
         [[4, 1; 3, 3],
          [4, 1; 4, 2],
          [3, 1; 5, 2],

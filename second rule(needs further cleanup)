@@ -1,29 +1,36 @@
 load("http://garsia.math.yorku.ca/~zabrocki/superpartitions.py")
+
+#wait is this the same thing as in the first file?
+#  lets just do a load("The first Pieri rule") so that we aren't editing two copies of the same thing
+# which is the add_horizontal_super_border_strip?
+
 def add_horizonal_border_strip(self, h):
-    r'''
-    this function returns superpatition followed by the first pieri rule after self are shifted by 'h' cells
+    r"""
+    a list of super partitions that differ from ``self`` by a horizontal strip
     
     INPUT:
-    -"self" -- superpatition
-    -"h" -- number of addition cells 
+
+    - ``h`` -- number of addition cells 
+
     OUPUT:
-    -"superpatition"-- superpartition followed by the first pieri rule
+
+    - a list of super partitions
     
     EXAMPLES::
-    sage:   add_horizonal_border_strip([[4,1],[3]], 3)
-    ...     [[4, 1; 3, 3],
-             [4, 1; 4, 2],
-             [3, 1; 5, 2],
-             [4, 1; 5, 1],
-             [3, 1; 6, 1],
-             [4, 0; 4, 3],
-             [3, 0; 5, 3],
-             [4, 0; 5, 2],
-             [3, 0; 6, 2],
-             [4, 1; 6],
-             [3, 1; 7]]
-    
-    '''
+
+        sage: add_horizonal_border_strip([[4,1],[3]], 3)
+        [[4, 1; 3, 3],
+         [4, 1; 4, 2],
+         [3, 1; 5, 2],
+         [4, 1; 5, 1],
+         [3, 1; 6, 1],
+         [4, 0; 4, 3],
+         [3, 0; 5, 3],
+         [4, 0; 5, 2],
+         [3, 0; 6, 2],
+         [4, 1; 6],
+         [3, 1; 7]]
+    """
     self = SuperPartition(self).to_circled_diagram()
     sp=self[0][:]
     sp.append(0)
@@ -47,23 +54,24 @@ def add_horizonal_border_strip(self, h):
     test = [self[0],x]
     return test
 
-
-
 def shift_circle_cells(self,nsp):
-    r'''
-    returns locations of circles that are bumped.
+    r"""
+    The locations of circles that are bumped.
+
     INPUT:
-        -"self"--: superpatition e.g. [[4,1],[3]].
-        -"nsp"--:  partition after adding cells e.g. [4, 3, 3, 1, 0]
+
+        - ``nsp`` -- partition after adding cells e.g. [4, 3, 3, 1, 0]
+
     OUTPUT:
-        -"circle_location"--: a list of the first element is non-circle diagram, and the second
+
+        - a list of the first element is non-circle diagram, and the second
         element is circle_location.
         
-    EXAMPLE::
+    EXAMPLES::
+
         sage: shift_circle_cells([[4,1],[3]],[4, 3, 3, 1, 0])
         [[4, 3, 3, 1, 0], [[0, 4], [3, 1]]]
-    
-    '''
+    """
     sp=self[0][:]
     sp.append(0)
     circle_location=[]
@@ -90,14 +98,12 @@ def shift_circle_cells(self,nsp):
         k+=1
     return circle_location
 
-
 def locate_cells(output_from_last_function):
-    r'''''
+    r"""
      compares two partitions to find locations of the added cells
      input: two partitions e.g. (4,2),(4,4)
      output: a list of locations of cells
-     '''''
-
+    """
     o1,o2=output_from_last_function[0],output_from_last_function[1]
     cell_location=[[] for i in range(len(o2)) ]
      
@@ -116,9 +122,7 @@ def locate_cells(output_from_last_function):
 
 
 def locate_unique_circle(output_from_last_function):
-    
-     
-    r'''''
+    r"""
      gives legal locations of the unique circle described in second pieri rule
      input: cell_location: a list of locations of cells e.g.[(0, 6), (0, 5), (0, 4)]
             circle_locations: a list of locations of circles  e.g.[(2,1),(1,3)]
@@ -130,7 +134,7 @@ def locate_unique_circle(output_from_last_function):
      The second pieri rule says that there is a unique circle located in the column c such that:
          column c  does not contain any cell of Ω∗/Λ∗.
          there is a cell of Ω∗/Λ∗ in every column strictly to the left of column c
-    '''''
+    """
     cell_location=locate_cells(output_from_last_function)
     circle_location=[a[1] for a in output_from_last_function[1]]
     partition=[a[0] for a in output_from_last_function[1]]
@@ -168,23 +172,28 @@ def locate_unique_circle(output_from_last_function):
     return sign_superpartition(l)
 
 
+# recommendation : write a function that computes the sign for a single
+# then apply this to the list in one line
+# [sign_superpartition(x) for x in list_of_things]
 def sign_superpartition(x):
-    r'''
-    this fuction takes legal locations of unique circles and return it with plus or 
-    minus sign by the second pieri rule.
+    r"""
+    determine the sign given by the by the second pieri rule for a list
+
     INPUT:
-    -"x"-- a list of circle diagram and circle location converted by the second pieri rule.
+
+    - ``x`` -- a list of circle diagram and circle location converted by the second pieri rule.
     OUTPUT:
-    -"sigh_sp"-- a list of superpartitions with plus or minus sign
+    - a list of superpartitions with plus or minus sign
+
     EXAMPLES::
-    sage: sign_superpartition([[[[4, 3, 3, 1], [(0, 4), (3, 1)]], [(1, 3)]], [[[4, 4, 2, 1]]],etc.])
-    ...   [[-1, [4, 3, 1; 3]],
-          [-1, [4, 2, 1; 4]],
-          [-1, [3, 2, 1; 5]],
-          [1, [4, 1, 0; 6]],
-          [1, [3, 1, 0; 7]]]
     
-    '''
+    sage: sign_superpartition([[[[4, 3, 3, 1], [(0, 4), (3, 1)]], [(1, 3)]], [[[4, 4, 2, 1]]],etc.])
+          [[-1, [4, 3, 1; 3]],
+           [-1, [4, 2, 1; 4]],
+           [-1, [3, 2, 1; 5]],
+           [1, [4, 1, 0; 6]],
+           [1, [3, 1, 0; 7]]]
+    """
     og = x[:]
     sigh_sp=[[]for i in range(len(x))]
     count_circle = 0
