@@ -1,0 +1,246 @@
+load("http://garsia.math.yorku.ca/~zabrocki/superpartitions.py")
+
+#wait is this the same thing as in the first file?
+#  lets just do a load("The first Pieri rule") so that we aren't editing two copies of the same thing
+# which is the add_horizontal_super_border_strip?
+
+def add_horizonal_border_strip(self, h):
+    r"""
+    a list of super partitions that differ from ``self`` by a horizontal strip
+    
+    INPUT:
+
+    - ``h`` -- number of addition cells 
+
+    OUPUT:
+
+    - a list of super partitions
+    
+    EXAMPLES::
+
+        sage: add_horizonal_border_strip([[4,1],[3]], 3)
+        [[4, 1; 3, 3],
+         [4, 1; 4, 2],
+         [3, 1; 5, 2],
+         [4, 1; 5, 1],
+         [3, 1; 6, 1],
+         [4, 0; 4, 3],
+         [3, 0; 5, 3],
+         [4, 0; 5, 2],
+         [3, 0; 6, 2],
+         [4, 1; 6],
+         [3, 1; 7]]
+    """
+    self = SuperPartition(self).to_circled_diagram()
+    sp=self[0][:]
+    sp.append(0)
+    rows_with_circle=[a[0] for a in self[1] ]
+    nsp=[list(la)+[0] for la in Partition(sp).add_horizontal_border_strip(h)] 
+    circle_location=[[]for i in range (len(nsp))]
+    for x in range(len(nsp)):
+        circle_location[x]=shift_circle_cells(self,nsp[x])
+    s1 = [la[1] for la in circle_location]
+    s2 = [la[0] for la in circle_location]
+    for i in range(len(s1)):        
+        k = [a[0] for a in s1[i]]
+        j = [a[1] for a in s1[i]]
+        for k1 in range(len(k)):
+            circle_location[i][0][k[k1]]+=1
+        if len(set(k))!= len(s1[i]) or len(set(j))!= len(s1[i]):
+            circle_location.remove([s2[i],s1[i]])
+    x=[[] for i in range(len(circle_location))]
+    for i in range(len(circle_location)):
+        x[i]= SuperPartition(SuperPartition.from_circled_diagram(circle_location[i][0],circle_location[i][1])).to_circled_diagram()
+    return x
+
+def shift_circle_cells(self,nsp):
+    r"""
+    The locations of circles that are bumped.
+
+    INPUT:
+
+        - ``nsp`` -- partition after adding cells e.g. [4, 3, 3, 1, 0]
+
+    OUTPUT:
+
+        - a list of the first element is non-circle diagram, and the second
+        element is circle_location.
+        
+    EXAMPLES::
+
+        sage: shift_circle_cells([[4,1],[3]],[4, 3, 3, 1, 0])
+        [[4, 3, 3, 1, 0], [[0, 4], [3, 1]]]
+    """
+    sp=self[0][:]
+    sp.append(0)
+    circle_location=[]
+    rows_with_circle=[a[0] for a in self[1] ]
+    index=0
+    k=0
+    circle_location = [nsp,[]]
+    for i in rows_with_circle:
+        if i < len(nsp)-1:
+            if sp[i]!=nsp[i]:             
+                j=rows_with_circle[k] 
+                circle_location[1].append([j+1,nsp[i+1]]) 
+            else:
+                circle_location[1].append(list(self[1][index])) 
+            index+=1
+        if i == len(nsp)-1: 
+            if sp[i]!=nsp[i]:   
+                j=rows_with_circle[k]
+                circle_location[1].append([j+1,0])
+            else:
+                j=rows_with_circle[k]      
+                circle_location[1].append(list(self[1][index]))
+            index+=1
+        k+=1
+    return circle_location
+
+def locate_cells(first_superpartition):
+    r"""
+     compares two partitions to find locations of the added cells
+     
+     INPUT: 
+     -``first_superpartition``-- self[0] and superpartition from first rule
+     
+     OUTPUT: a list of locations of cells
+     example:
+     sage:([4, 3, 1], 
+     [[[4, 3, 3, 1], [(0, 4), (3, 1)]], 
+     [[4, 4, 2, 1], [(0, 4), (3, 1)]], 
+     [[5, 3, 2, 1], [(1, 3), (3, 1)]], 
+     [[5, 4, 1, 1], [(1, 4), (2, 1)]], 
+     [[6, 3, 1, 1], [(1, 3), (2, 1)]], 
+     [[4, 4, 3], [(0, 4), (3, 0)]], 
+     [[5, 3, 3], [(1, 3), (3, 0)]], 
+     [[5, 4, 2], [(1, 4), (3, 0)]], 
+     [[6, 3, 2], [(1, 3), (3, 0)]], 
+     [[6, 4, 1], [(1, 4), (2, 1)]], 
+     [[7, 3, 1], [(1, 3), (2, 1)]]])
+     
+     
+     output:
+     [[(2, 2), (2, 1), (3, 0)],
+     [(1, 3), (2, 1), (3, 0)],
+     [(0, 4), (2, 1), (3, 0)],
+     [(0, 4), (1, 3), (3, 0)],
+     [(0, 5), (0, 4), (3, 0)],
+     [(1, 3), (2, 2), (2, 1)],
+     [(0, 4), (2, 2), (2, 1)],
+     [(0, 4), (1, 3), (2, 1)],
+     [(0, 5), (0, 4), (2, 1)],
+     [(0, 5), (0, 4), (1, 3)],
+     [(0, 6), (0, 5), (0, 4)]]
+     
+    """
+    o1,o2=first_superpartition[0],first_superpartition[1]
+    cell_location=[[] for i in range(len(o2)) ]
+     
+    for k in range(len(o2)):
+
+        old_partition,new_partition=o1,o2[k][0]
+
+        for i in range(len(old_partition)):
+            if old_partition[i]!=new_partition[i]:
+                for j in range(new_partition[i]-old_partition[i]):
+                    cell_location[k].append((i,new_partition[i]-j-1))
+        if len(new_partition)>len(old_partition):
+            for i in range(new_partition[-1]):
+                cell_location[k].append((len(new_partition)-1,i))
+    return(cell_location)
+
+def second_pieri_rule(self,h):
+    r"""
+     gives legal locations of the unique circle described in second pieri rule
+     
+     
+     INPUT: 
+     
+     -``h``-- number of addition cells 
+     
+     
+     OUTPUT:
+     
+     
+     - a list superpartition of legal locations of unique circles
+     
+    EXAMPLE::
+     sage:([4, 3, 1], [[[4, 3, 3, 1], [(0, 4), (3, 1)]], [[4, 4, 2, 1], [(0, 4), (3, 1)]],etc])
+     
+    [[-1, [4, 3, 1; 3]],
+     [-1, [4, 2, 1; 4]],
+     etc.]
+    """
+    output_from_last_function = [SuperPartition(self).to_circled_diagram()[0],add_horizonal_border_strip(self, h)]
+    cell_location=locate_cells(output_from_last_function)
+    circle_location=[a[1] for a in output_from_last_function[1]]
+    partition=[a[0] for a in output_from_last_function[1]]
+
+    legal_unique_circle_locations=[[] for i in range(len(partition)) ]
+    for j in range(len(partition)):
+
+        partition[j]=list(partition[j])+[0]
+        row_with_cir=[circle_location[j][i][0] for i in(range(len(circle_location[j])))]
+        col_with_cir=[circle_location[j][i][1] for i in(range(len(circle_location[j])))]
+        col_with_cel=[cell_location[j][i][1] for i in(range(len(cell_location[j])))]
+        for col in range(partition[j][0]+1):
+            if col not in col_with_cir:
+                if col not in col_with_cel:
+                    for row in range(len(partition[j])):
+                        if row not in row_with_cir:
+                            l=list(range(col))
+                            if set(l) <= set(col_with_cel):
+                                roww=0
+                                for i in partition[j]:
+                                    if i>col:
+                                        roww+=1
+                                if roww==0:
+                                    legal_unique_circle_locations[j].append((roww,col))
+                                else:
+                                     if partition[j][roww]<partition[roww-1]:
+                                        legal_unique_circle_locations[j].append((roww,col))
+    
+    for i in range(len(legal_unique_circle_locations)):
+        legal_unique_circle_locations[i]=list(set(legal_unique_circle_locations[i]))
+    l=[] 
+    for i in range(len(legal_unique_circle_locations)):
+        if legal_unique_circle_locations[i]!=[]:
+            l.append(sign_superpartition([output_from_last_function[1][i],legal_unique_circle_locations[i]]))
+    return l
+
+
+# recommendation : write a function that computes the sign for a single
+# then apply this to the list in one line
+# [sign_superpartition(x) for x in list_of_things]
+def sign_superpartition(x):
+    r"""
+    determine the sign given by the by the second pieri rule for a list
+
+    INPUT:
+
+    - ``x`` -- a list of circle diagram and circle location converted by the second pieri rule.
+    OUTPUT:
+    - a list of superpartitions with plus or minus sign
+
+    EXAMPLES::
+    
+    sage: sign_superpartition([[[4, 3, 3, 1], [(0, 4), (3, 1)]], [(1, 3)]])
+          [-1, [4, 3, 1; 3]]
+
+    """
+    
+    #[[[4, 3, 3, 1], [(0, 4), (3, 1)]], [(1, 3)]]
+    sign_sp=[]
+    count_circle = 0
+    og = x[0]
+    og[1].append(x[1][0]) 
+    for j in range(len(og[1])-1):
+        if og[1][j][0] > og[1][len(og[1])-1][0]:
+            count_circle+=1      
+    sign_sp.append((-1)**count_circle)
+    sign_sp.append( SuperPartition.from_circled_diagram(og[0],og[1]))   
+    return sign_sp
+
+    
+second_pieri_rule([[4,1],[3]],3)
