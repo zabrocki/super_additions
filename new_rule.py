@@ -148,6 +148,8 @@ def second_pieri_rule(self,h):
          [-1, [4, 2, 1; 4]],
          etc.]
     """
+    to_diagram = [SuperPartition([la[0],la[1]]).to_circled_diagram() for la in add_horizonal_border_strip(self, h)]
+    output_from_last_function = [SuperPartition(self).to_circled_diagram()[0],to_diagram]
     output_from_last_function = [SuperPartition(self).to_circled_diagram()[0],add_horizonal_border_strip(self, h)]
     cell_location=locate_cells(output_from_last_function)
     circle_location=[a[1] for a in output_from_last_function[1]]
