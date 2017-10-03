@@ -63,29 +63,11 @@ def shift_circle_cells(self,nsp):
     """
     sp=self[0][:]
     sp.append(0)
-    circle_location=[]
-    rows_with_circle=[a[0] for a in self[1] ]
-    index=0
-    k=0
-    circle_location = [nsp,[]]
-    for i in rows_with_circle:
-        if i < len(nsp)-1:
-            if sp[i]!=nsp[i]:             
-                j=rows_with_circle[k] 
-                circle_location[1].append([j+1,nsp[i+1]]) 
-            else:
-                circle_location[1].append(list(self[1][index])) 
-            index+=1
-        if i == len(nsp)-1: 
-            if sp[i]!=nsp[i]:   
-                j=rows_with_circle[k]
-                circle_location[1].append([j+1,0])
-            else:
-                j=rows_with_circle[k]      
-                circle_location[1].append(list(self[1][index]))
-            index+=1
-        k+=1
-    return circle_location
+    row_changed = [row1-row2 for row1,row2 in zip(nsp,sp)]
+    move_circle_location = [nsp,[(la[0]+1,nsp[la[0]+1]) for la in self[1] if row_changed[la[0]]!=0]+\
+                            [(la) for la in self[1] if row_changed[la[0]]==0]]
+    return move_circle_location
+
 
 def locate_cells(first_superpartition):
     r"""
