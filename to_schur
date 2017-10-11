@@ -1,0 +1,42 @@
+'''''
+
+We tested many superpartitions and found out that the input is also existing in the output.
+Then we assumed that every output includes its input, and there are existing one to one relationship between input and output. 
+Based on this assumption, we computed every term in ouput by to_complete_on_basis function again,
+if a term gets the exact same output, then we return this term.
+
+We tested over 20 superpartitions, they all returned the term which is exactly same as the superpartition input.
+However, the computing time increases as the number of rows increases. It will take around 5 sec to compute 10 rows superpartition.
+
+EXAMPLES::
+    sage:SFSS = SymmetricFunctionsinSuperSpace(QQ)
+    sage: s = Schur(SFSS)
+    sage: A = s.to_complete_on_basis(SuperPartition([[2,0],[3,2,2]]));
+    sage: to_schur(A)
+    [2, 0; 3, 2, 2]
+    
+    sage: A = s.to_complete_on_basis(SuperPartition([[6,3],[4,2,1]]));
+    sage:to_schur(A)
+    [6, 3; 4, 2, 1]
+    
+    sage: A = s.to_complete_on_basis(SuperPartition([[8,7],[6,5,4]]));
+    sage: to_schur(A)
+    [8, 7; 6, 5, 4]
+    
+    sage: A = s.to_complete_on_basis(SuperPartition([[8,7,6,5],[4,3,2,1]]));
+    sage: to_schur(A)
+    [8, 7, 6, 5; 4, 3, 2, 1]
+'''''
+load('http://garsia.math.yorku.ca/~zabrocki/sf_superspace_schur.py')
+SFSS = SymmetricFunctionsinSuperSpace(QQ)
+s = Schur(SFSS)
+A = s.to_complete_on_basis(SuperPartition([[2,1],[3,2,2]]))
+
+
+def to_schur(A):
+    B = [sp for sp,c in A]
+    for (sp,c) in A:
+        D = [sp1 for sp1,c in s.to_complete_on_basis(SuperPartition(sp))]
+        if B==D:
+            return sp
+to_schur(A)
