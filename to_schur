@@ -2,7 +2,7 @@
 
 We tested many superpartitions and found out that the input is also existing in the output.
 Then we assumed that every output includes its input, and there are existing one to one relationship between input and output. 
-Based on this assumption, we computed every term in ouput by to_complete_on_basis function again,
+Based on this assumption, we computed every term in ouput using to_complete_on_basis function again,
 if a term gets the exact same output, then we return this term.
 
 We tested over 20 superpartitions, they all returned the term which is exactly same as the superpartition input.
