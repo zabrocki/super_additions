@@ -14,7 +14,17 @@ def leading_term(h_expr):
     ....:([[6, 3, 2], [4, 2, 1]], -1)
     
     '''''
+
     sp = [[i,c] for i,c in h_expr]
     sum_term = [[sum(i[0]),[i[1][0]],i,c] for i,c in sp]
     leading_term= min([[[i[2][0],i[2][1]], i[3]] for i in sum_term if i[0] == max(sum_term[i][0]for i in range(len(sum_term)))])
-    return leading_term[0],leading_term[1]
+    return SuperPartition(leading_term[0]),leading_term[1]
+
+    '''''
+    If I change the while condition in complete_to_self_by_triangularity(h_expr) to 0 instead of self.zero(),
+    this code and complete_to_self_by_triangularity(h_expr) will return the superpartitions 
+    we input.
+    
+    I know that self.zero() is 0 too, but the while loop does't stop at 0. It will run one more time, and the code gets an error.
+    Can we replace the while h_expr !=self.zero(): to while h_expr !=0:
+    '''''
