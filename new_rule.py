@@ -4,12 +4,12 @@ load("http://garsia.math.yorku.ca/~zabrocki/superpartitions.py")
 #  lets just do a load("The first Pieri rule") so that we aren't editing two copies of the same thing
 # which is the add_horizontal_super_border_strip?
 
-def add_horizonal_border_strip(self, h):
+def add_horizonal_border_strip(sp, h):
     r"""
     a list of super partitions that differ from ``self`` by a horizontal strip
     
     INPUT:
-
+    - ``sp`` -- a superpartition
     - ``h`` -- number of addition cells 
 
     OUPUT:
@@ -33,40 +33,41 @@ def add_horizonal_border_strip(self, h):
         sage: add_horizonal_border_strip([[2,1],[3]], 2)
         [[2, 1; 3, 2], [2, 1; 4, 1], [2, 0; 3, 3], [2, 0; 4, 2], [2, 1; 5]]
     """
-    (sp, circ_list) = SuperPartition(self).to_circled_diagram()
+    (sp, circ_list) = SuperPartition(sp).to_circled_diagram()
     rows_with_circle=[a[0] for a in circ_list]
     nsp=[list(la)+[0] for la in sp.add_horizontal_border_strip(h)] 
-    circle_location=[shift_circle_cells([sp, circ_list],mu) for mu in nsp]
-    out = [SuperPartition.from_circled_diagram(*elt) \
-           for elt in circle_location \
-           if len(uniq([k for (j,k) in elt[1]]))==len(elt[1]) \
-           and len(uniq([j for (j,k) in elt[1]]))==len(elt[1])]
+    out=[shift_circle_cells([sp, circ_list],mu) for mu in nsp \
+         if shift_circle_cells([sp, circ_list],mu) != None]
     return out
 
-def shift_circle_cells(self,nsp):
+def shift_circle_cells(sp,nsp):
     r"""
-    The locations of circles that are bumped.
+    The superpartition of circles that are bumped.
 
     INPUT:
-
+        - ``sp`` -- a superpartition
         - ``nsp`` -- partition after adding cells e.g. [4, 3, 3, 1, 0]
 
     OUTPUT:
 
-        - a list of the first element is non-circle diagram, and the second
-        element is circle_location.
+        - a list of superpartition after adding cells
         
     EXAMPLES::
 
-        sage: shift_circle_cells([[4,1],[3]],[4, 3, 3, 1, 0])
-        [[4, 3, 3, 1, 0], [[0, 4], [3, 1]]]
+        sage: shift_circle_cells([[4, 3, 3, 1], [(0, 4), (1, 3), (3, 1)]], [4, 3, 3, 3, 1, 0])
+        [4, 3, 1; 3, 3]
+        sage: shift_circle_cells([[4, 3, 3, 1], [(0, 4), (1, 3), (3, 1)]], [4, 4, 3, 2, 1, 0])
+        [4, 3, 1; 4, 2]
+        sage: shift_circle_cells([[4, 3, 3, 1], [(0, 4), (1, 3), (3, 1)]], [4, 4, 3, 3, 0])
+        [4, 3, 0; 4, 3]
     """
-    sp=self[0][:]
-    sp.append(0)
-    row_changed = [row1-row2 for row1,row2 in zip(nsp,sp)]
-    move_circle_location = [nsp,[(la[0]+1,nsp[la[0]+1]) for la in self[1] if row_changed[la[0]]!=0]+\
-                            [(la) for la in self[1] if row_changed[la[0]]==0]]
-    return move_circle_location
+    sp1=sp[0][:]
+    sp1.append(0)
+    row_changed = [row1-row2 for row1,row2 in zip(nsp,sp1)]
+    new_sp = [nsp,[(i[0]+1,nsp[i[0]+1]) for i in sp[1] if row_changed[i[0]]!=0]+\
+                            [(i) for i in sp[1] if row_changed[i[0]]==0]]
+    if len(uniq([k for (j,k) in new_sp[1]]))==len(new_sp[1]): 
+        return SuperPartition.from_circled_diagram(*new_sp)
 
 
 def locate_cells(first_superpartition):
