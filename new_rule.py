@@ -33,41 +33,19 @@ def add_horizonal_border_strip(sp, h):
         sage: add_horizonal_border_strip([[2,1],[3]], 2)
         [[2, 1; 3, 2], [2, 1; 4, 1], [2, 0; 3, 3], [2, 0; 4, 2], [2, 1; 5]]
     """
-    (sp, circ_list) = SuperPartition(sp).to_circled_diagram()
+    (sp1, circ_list) = SuperPartition(sp).to_circled_diagram()
+    nsp=[list(la)+[0] for la in sp1.add_horizontal_border_strip(h)]
+    sp1= sp1+[0]
+    out=[]
     rows_with_circle=[a[0] for a in circ_list]
-    nsp=[list(la)+[0] for la in sp.add_horizontal_border_strip(h)] 
-    out=[shift_circle_cells([sp, circ_list],mu) for mu in nsp \
-         if shift_circle_cells([sp, circ_list],mu) != None]
+    for elt in nsp:
+        row_changed = [row1-row2 for row1,row2 in zip(elt,sp1)]
+        new_sp = [elt,[(i[0]+1,elt[i[0]+1]) for i in circ_list if row_changed[i[0]]!=0]+\
+                            [(i) for i in circ_list if row_changed[i[0]]==0]]
+        if len(uniq([k for (j,k) in new_sp[1]]))==len(new_sp[1]): 
+            out+=[SuperPartition.from_circled_diagram(*new_sp)]
     return out
 
-def shift_circle_cells(sp,nsp):
-    r"""
-    The superpartition of circles that are bumped.
-
-    INPUT:
-        - ``sp`` -- a super partition
-        - ``nsp`` -- partition after adding cells e.g. [4, 3, 3, 1, 0]
-
-    OUTPUT:
-
-        - a list of superpartition after adding cells
-        
-    EXAMPLES::
-
-        sage: shift_circle_cells([[4, 3, 3, 1], [(0, 4), (1, 3), (3, 1)]], [4, 3, 3, 3, 1, 0])
-        [4, 3, 1; 3, 3]
-        sage: shift_circle_cells([[4, 3, 3, 1], [(0, 4), (1, 3), (3, 1)]], [4, 4, 3, 2, 1, 0])
-        [4, 3, 1; 4, 2]
-        sage: shift_circle_cells([[4, 3, 3, 1], [(0, 4), (1, 3), (3, 1)]], [4, 4, 3, 3, 0])
-        [4, 3, 0; 4, 3]
-    """
-    sp1=sp[0][:]
-    sp1.append(0)
-    row_changed = [row1-row2 for row1,row2 in zip(nsp,sp1)]
-    new_sp = [nsp,[(i[0]+1,nsp[i[0]+1]) for i in sp[1] if row_changed[i[0]]!=0]+\
-                            [(i) for i in sp[1] if row_changed[i[0]]==0]]
-    if len(uniq([k for (j,k) in new_sp[1]]))==len(new_sp[1]): 
-        return SuperPartition.from_circled_diagram(*new_sp)
 
 
 def locate_cells(first_superpartition):
