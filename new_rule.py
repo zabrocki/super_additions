@@ -9,7 +9,7 @@ def add_horizonal_border_strip(sp, h):
     a list of super partitions that differ from ``self`` by a horizontal strip
     
     INPUT:
-    - ``sp`` -- a superpartition
+    - ``sp`` -- a super partition
     - ``h`` -- number of addition cells 
 
     OUPUT:
@@ -45,7 +45,7 @@ def shift_circle_cells(sp,nsp):
     The superpartition of circles that are bumped.
 
     INPUT:
-        - ``sp`` -- a superpartition
+        - ``sp`` -- a super partition
         - ``nsp`` -- partition after adding cells e.g. [4, 3, 3, 1, 0]
 
     OUTPUT:
