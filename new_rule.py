@@ -136,7 +136,7 @@ def second_pieri_rule(self,h):
                                 if roww==0:
                                     legal_unique_circle_locations[j].append((roww,col))
                                 else:
-                                     if partition[j][roww]<partition[roww-1]:
+                                     if partition[j][roww]<partition[j][roww-1]:
                                         legal_unique_circle_locations[j].append((roww,col))
     
     for i in range(len(legal_unique_circle_locations)):
