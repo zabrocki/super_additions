@@ -57,5 +57,5 @@ def theorem_10(sp,h):
                     if asp[circ_list[i][0]+1]==sp1[circ_list[i][0]]: 
                         moved_circ_list[i].append((circ_list[i][0]+1,circ_list[i][1]))
         out+=[[moved_circ_list,asp]]  
-    result = [[j[1],[j[0][0][0],j[0][1][i]]] for j in out if j[0][0] for i in range(len(j[0][1]))]
+    result = [[j[1],[j[0][0][0],j[0][1][i]]] for j in out if j[0] and j[0][0]  for i in range(len(j[0][1]))]
     return [SuperPartition.from_circled_diagram(*i) for i in result if len(i[1])!=0]
