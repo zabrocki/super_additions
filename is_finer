@@ -1,0 +1,28 @@
+def is_finer(a,b):
+    r'''
+    
+    return ``True`` if and only if a is finer than b
+    
+    EXAMPLES::
+        sage: is_finer([-3,3,4,2],[-6,4,2])
+        True
+        sage: is_finer([-3,4,2],[-6,4,2])
+        False
+        sage: is_finer([0,1],[-1])
+        Ture
+        
+    '''
+    if len(a)<len(b):
+        return False
+    if len(a)==len(b):
+        return a==b
+    if len([x for x in a if x<=0])!=len([x for x in b if x<=0]):
+        return False
+    if sum(abs(x) for x in a)!= sum(abs(x) for x in b):
+        return False
+    if a[0]<=0 and b[0]>0:
+        return False
+    if a[0]<=0 and b[0]<=0:
+        return is_finer(a[1:],[abs(b[0])-abs(a[0])]+b[1:])
+    if a[0]>0:
+        return is_finer(a[1:],[sign(b[0])*(abs(b[0])-a[0])]+b[1:])
