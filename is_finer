@@ -1,3 +1,4 @@
+
 def is_finer(a,b):
     r'''
     
@@ -12,6 +13,8 @@ def is_finer(a,b):
         Ture
         
     '''
+    a.sort()
+    b.sort()
     if len(a)<len(b):
         return False
     if len(a)==len(b):
