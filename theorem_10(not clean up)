@@ -44,20 +44,28 @@ def theorem_10(sp,h):
     for asp in nsp:
         asp = asp+[0]
         change_in_rows = map(operator.sub,asp[:len(sp1)],sp1)
-        moved_circ_list= [[]for i in range(len(circ_list))]        
-        for i in range(len(circ_list)):                    
+        moved_circ_list= [[]for i in range(len(circ_list))]  
+        for i in range(len(circ_list)):    
             if change_in_rows[circ_list[i][0]]==0:             
                 moved_circ_list[i].append(circ_list[i])
             else:                     
                 if circ_list[i][0]==0:                                                      
                     moved_circ_list[i].append((0,circ_list[i][1]+change_in_rows[0]))
+                    if circ_list[i][1]==asp[1]:
+                        moved_circ_list[i].append((1,asp[1]))
                 else:                                                                        
                     if circ_list[i][1]+change_in_rows[circ_list[i][0]]<sp1[circ_list[i][0]-1]:                          
                         moved_circ_list[i].append((circ_list[i][0],circ_list[i][1]+change_in_rows[circ_list[i][0]]))
                     if asp[circ_list[i][0]+1]==sp1[circ_list[i][0]]: 
                         moved_circ_list[i].append((circ_list[i][0]+1,circ_list[i][1]))
         out+=[[moved_circ_list,asp]]  
-    result = [[j[1],[j[0][0][0]]+[j[0][k+1][i]]] for j in out  if j[0] and j[0][0] if len(j[0])>1 for k in range(len(j[0])-1) for i in range(len(j[0][k+1]))]+\
-                [[j[1],j[0][0]] for j in out if len(j[0])==1]+\
-                [[j[1],j[0]] for j in out  if len(j[0])==0]
-    return [SuperPartition.from_circled_diagram(*i) for i in result]
+    result = []
+    for i in out:
+        if not i[0]:
+            result = [i[1],i[0]]
+            return [SuperPartition.from_circled_diagram(*result)]
+        else:
+            x = reduce(lambda a,b: [item_a+item_b for item_a in a for item_b in b], i[0])
+            for j in x:
+                result += [[i[1],zip(j,j[1:])[::2]]]
+    return [SuperPartition.from_circled_diagram(*i) for i in result if len(i[1])==len(sp[0])]
