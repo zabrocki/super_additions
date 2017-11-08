@@ -62,8 +62,7 @@ def theorem_10(sp,h):
     result = []
     for i in out:
         if not i[0]:
-            result = [i[1],i[0]]
-            return [SuperPartition.from_circled_diagram(*result)]
+            result += [[i[1],i[0]]]
         else:
             x = reduce(lambda a,b: [item_a+item_b for item_a in a for item_b in b], i[0])
             for j in x:
